@@ -1,0 +1,30 @@
+# Definicja wszystkich obiekrów w środowisku
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Astro project deployment with S3 and CloudFront (No custom domain)
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: dev
+    Description: The environment to deploy to (e.g., dev, prod)
+
+
+Resources:
+  BackendRepository: 
+    Type: AWS::ECR::Repository
+
+
+Outputs:
+  BackendRepositoryUri:
+    Description: URI of the ECR repository
+    Value: !GetAtt BackendRepository.RepositoryUri
+    Export:
+      Name: !Sub "${ProjectName}-BackendRepositoryUri"
+  
+  BackendRepositoryName:
+    Description: Name of the ECR repository
+    Value: !Ref BackendRepository
+    Export:
+      Name: !Sub "${ProjectName}-BackendRepositoryName"
