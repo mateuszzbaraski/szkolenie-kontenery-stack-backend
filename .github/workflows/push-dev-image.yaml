@@ -39,7 +39,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: 'latest'
       run: |
-        docker build -t 416700588573.dkr.ecr.eu-central-1.amazonaws.com/obraz-szkolenie
+        docker build -t 416700588573.dkr.ecr.eu-central-1.amazonaws.com/obraz-szkolenie .
         docker push 416700588573.dkr.ecr.eu-central-1.amazonaws.com/obraz-szkolenie
     
  
