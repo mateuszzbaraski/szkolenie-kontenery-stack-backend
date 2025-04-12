@@ -60,7 +60,7 @@ Resources:
           Subnets:
             - subnet-01fca484b79d487c1
             - subnet-0e2c93a24cb1a9963
-      TaskDefinition: !Ref ECSTaskDefinition
+      TaskDefinition: !Ref BackendTaskDefinition
 
 
 Outputs:
