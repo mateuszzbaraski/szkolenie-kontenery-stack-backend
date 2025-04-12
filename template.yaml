@@ -14,6 +14,22 @@ Parameters:
 Resources:
   BackendRepository: 
     Type: AWS::ECR::Repository
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: FargateSzkolenieCluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT
+
 
 
 Outputs:
@@ -28,3 +44,6 @@ Outputs:
     Value: !Ref BackendRepository
     Export:
       Name: !Sub "${ProjectName}-BackendRepositoryName"
+
+
+# dodać cluster, task definition etc
