@@ -13,4 +13,3 @@ s3_bucket = "szkolenie-deployment-bucket-zbar"
 region = "eu-central-1"
 parameter_overrides = "ProjectName=\"szkolenie-projekt\""
 no_fail_on_empty_changeset = true
-
