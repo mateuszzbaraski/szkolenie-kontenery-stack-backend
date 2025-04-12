@@ -31,6 +31,8 @@ Resources:
   BackendTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      RequiresCompatibilities:
+          - FARGATE
       ContainerDefinitions:
         - Name: AppName
           Image: !GetAtt BackendRepository.RepositoryUri
