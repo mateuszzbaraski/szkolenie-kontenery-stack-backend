@@ -1,0 +1,23 @@
+name: Deploy SAM Template and Start Instance Refresh
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3 # Składnia uses mówi gitowi 'skorzystaj z publicznej akcji'. Bardzo szeroka biblioteka zrobionych akcji
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install AWS SAM CLI 
+      run: |
+        pip install aws-sam-cli
