@@ -14,7 +14,7 @@ Parameters:
 Resources:
   BackendRepository: 
     Type: AWS::ECR::Repository
-    
+
 
   ECSCluster:
     Type: AWS::ECS::Cluster
@@ -28,6 +28,7 @@ Resources:
       Configuration:
         ExecuteCommandConfiguration:
           Logging: DEFAULT
+
 
   BackendTaskDefinition:
     Type: AWS::ECS::TaskDefinition
