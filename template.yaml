@@ -40,7 +40,7 @@ Resources:
           - FARGATE
       NetworkMode: awsvpc
       ContainerDefinitions:
-        - Name: AppName
+        - Name: ApkaMatiego
           Image: !GetAtt BackendRepository.RepositoryUri
           PortMappings:
             - ContainerPort: 8080
@@ -53,7 +53,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       LoadBalancers:
-          - ContainerName: Backend
+          - ContainerName: ApkaMatiego
             ContainerPort: 8080
             TargetGroupArn: !Ref ALBTargetGroup
       ServiceName: cfn-service
