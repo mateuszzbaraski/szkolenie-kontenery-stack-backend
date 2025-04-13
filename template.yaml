@@ -91,8 +91,8 @@ Resources:
       SecurityGroups:
         - !Ref ALBSecurityGroup
       Subnets:
-        - SUBNET_1
-        - SUBNET_2
+        - subnet-01fca484b79d487c1
+        - subnet-0e2c93a24cb1a9963
       Type: application
       IpAddressType: ipv4
 
@@ -102,7 +102,7 @@ Resources:
       Port: 8080
       Protocol: HTTP
       TargetType: ip
-      VpcId: VPC_ID
+      VpcId: vpc-0ac9c2be3bca6c417
       HealthCheckPath: /
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
@@ -123,7 +123,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for the ALB
-      VpcId: VPC_ID
+      VpcId: vpc-0ac9c2be3bca6c417
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
