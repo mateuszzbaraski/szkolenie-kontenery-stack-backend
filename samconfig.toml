@@ -15,6 +15,6 @@ parameter_overrides = [
   "ProjectName=DemoBackendStack",
   "ClusterName=FargateInfra",
   "VpcId=vpc-0ac9c2be3bca6c417",
-  "SubnetIds=project-subnet-public2-eu-central-1b",
+  "SubnetIds=subnet-0e2c93a24cb1a9963",
 ]
 no_fail_on_empty_changeset = true
