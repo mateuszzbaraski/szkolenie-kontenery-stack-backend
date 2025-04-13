@@ -9,25 +9,20 @@ Parameters:
     Type: String
     Default: dev
     Description: The environment to deploy to (e.g., dev, prod)
-
+  ClusterName:
+    Type: String
+    Description: The name of the ECS cluster
+  VpcId:
+    Type: String
+    Description: The ID of the VPC where the ECS cluster will be created
+  SubnetIds:
+    Type: CommaDelimitedList
+    Description: The IDs of the subnets where the ECS cluster will be created
+ 
 
 Resources:
   BackendRepository: 
     Type: AWS::ECR::Repository
-
-
-  ECSCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-      ClusterName: FargateSzkolenieCluster
-      CapacityProviders:
-        - FARGATE
-      DefaultCapacityProviderStrategy:
-        - CapacityProvider: FARGATE
-          Weight: 1
-      Configuration:
-        ExecuteCommandConfiguration:
-          Logging: DEFAULT
 
 
   BackendTaskDefinition:
@@ -49,7 +44,6 @@ Resources:
           Essential: true
 
 
-
   BackendECSService:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerListener
@@ -59,7 +53,7 @@ Resources:
             ContainerPort: 8080
             TargetGroupArn: !Ref ALBTargetGroup
       ServiceName: cfn-service
-      Cluster: !Ref ECSCluster
+      Cluster: !Ref ClusterName
       DesiredCount: 1
       LaunchType: FARGATE
       NetworkConfiguration:
@@ -94,8 +88,7 @@ Resources:
       SecurityGroups:
         - !Ref ALBSecurityGroup
       Subnets:
-        - subnet-01fca484b79d487c1
-        - subnet-0e2c93a24cb1a9963
+        !Ref SubnetIds
       Type: application
       IpAddressType: ipv4
 
@@ -105,7 +98,7 @@ Resources:
       Port: 8080
       Protocol: HTTP
       TargetType: ip
-      VpcId: vpc-0ac9c2be3bca6c417
+      VpcId: !Ref VpcId
       HealthCheckPath: /
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
@@ -126,7 +119,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for the ALB
-      VpcId: vpc-0ac9c2be3bca6c417
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -138,18 +131,4 @@ Resources:
           CidrIp: 0.0.0.0/0
 
 
-Outputs:
-  BackendRepositoryUri:
-    Description: URI of the ECR repository
-    Value: !GetAtt BackendRepository.RepositoryUri
-    Export:
-      Name: !Sub "${ProjectName}-BackendRepositoryUri"
-  
-  BackendRepositoryName:
-    Description: Name of the ECR repository
-    Value: !Ref BackendRepository
-    Export:
-      Name: !Sub "${ProjectName}-BackendRepositoryName"
-
-
-# dodać cluster, task definition etc
+# Outputs:

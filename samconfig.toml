@@ -4,12 +4,17 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "szkolenie-stack2"
+stack_name = "szkolenie-stack-backend"
 
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = false
 s3_bucket = "szkolenie-deployment-bucket-zbar"
 region = "eu-central-1"
-parameter_overrides = "ProjectName=\"szkolenie-projekt\""
+parameter_overrides = [
+  "ProjectName=DemoBackendStack",
+  "ClusterName=FargateInfra",
+  "VpcId=vpc-0ac9c2be3bca6c417",
+  "SubnetIds=project-subnet-public2-eu-central-1b",
+]
 no_fail_on_empty_changeset = true
