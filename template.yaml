@@ -42,6 +42,7 @@ Resources:
               HostPort: 8080
               Protocol: tcp
           Essential: true
+          
 
 
   BackendECSService:
