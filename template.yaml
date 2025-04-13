@@ -35,6 +35,7 @@ Resources:
     Properties:
       RequiresCompatibilities:
           - FARGATE
+      NetworkMode: awsvpc
       ContainerDefinitions:
         - Name: AppName
           Image: !GetAtt BackendRepository.RepositoryUri
@@ -46,6 +47,7 @@ Resources:
           Memory: 512
           Essential: true
   
+
   BackendECSService:
     Type: AWS::ECS::Service
     Properties:
