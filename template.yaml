@@ -52,6 +52,10 @@ Resources:
   BackendECSService:
     Type: AWS::ECS::Service
     Properties:
+      LoadBalancers:
+          - ContainerName: Backend
+            ContainerPort: 8080
+            TargetGroupArn: !Ref ALBTargetGroup
       ServiceName: cfn-service
       Cluster: !Ref ECSCluster
       DesiredCount: 1
