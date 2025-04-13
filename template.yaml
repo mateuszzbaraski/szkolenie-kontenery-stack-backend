@@ -35,6 +35,7 @@ Resources:
     Properties:
       Cpu: 256
       Memory: 512
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
       RequiresCompatibilities:
           - FARGATE
       NetworkMode: awsvpc
@@ -64,6 +65,19 @@ Resources:
             - subnet-01fca484b79d487c1
             - subnet-0e2c93a24cb1a9963
       TaskDefinition: !Ref BackendTaskDefinition
+
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
 
 
 Outputs:
