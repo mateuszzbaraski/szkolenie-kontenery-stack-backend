@@ -18,6 +18,10 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
     Description: The IDs of the subnets where the ECS cluster will be created
+  DatabaseUsername:
+    Type: String
+    Default: dbadmin
+    Description: Username for the database
  
 
 Resources:
@@ -42,7 +46,7 @@ Resources:
               HostPort: 8080
               Protocol: tcp
           Essential: true
-          
+
 
 
   BackendECSService:
@@ -100,7 +104,7 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       VpcId: !Ref VpcId
-      HealthCheckPath: /
+      HealthCheckPath: /api/hello
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
@@ -131,5 +135,92 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
 
+    
+    # Database Resources
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for Aurora PostgreSQL
+      SubnetIds: !Ref SubnetIds
 
-# Outputs:
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Aurora PostgreSQL
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref ServiceSecurityGroupId
+
+  # Generate random password for database
+  GeneratedDatabasePassword:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${ProjectName}-db-password"
+      Description: "Auto-generated password for database"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "{{resolve:ref:DatabaseUsername}}"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
+  AuroraCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-postgresql
+      EngineVersion: 14.5
+      DatabaseName: !Sub "${ProjectName}db"
+      MasterUsername: !Ref DatabaseUsername
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref GeneratedDatabasePassword, ':SecretString:password}}' ]]
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VpcSecurityGroupIds:
+        - !Ref DBSecurityGroup
+      BackupRetentionPeriod: 7
+      StorageEncrypted: true
+      DeletionProtection: false
+
+  AuroraInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBClusterIdentifier: !Ref AuroraCluster
+      DBInstanceClass: db.t4g.micro
+      Engine: aurora-postgresql
+      PubliclyAccessible: false
+
+  DatabaseSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${ProjectName}-db-credentials"
+      Description: "Database credentials"
+      SecretString: !Sub 
+        - '{"username":"${DatabaseUsername}","password":"${Password}","engine":"postgres","host":"${AuroraCluster.Endpoint.Address}","port":"${AuroraCluster.Endpoint.Port}","dbname":"${ProjectName}db"}'
+        - Password: !Join ['', ['{{resolve:secretsmanager:', !Ref GeneratedDatabasePassword, ':SecretString:password}}' ]]
+ 
+
+
+Outputs:
+  DatabaseEndpoint:
+    Description: Endpoint of the Aurora PostgreSQL cluster
+    Value: !GetAtt AuroraCluster.Endpoint.Address
+    Export:
+      Name: !Sub "${ProjectName}-DatabaseEndpoint"
+
+  DatabasePort:
+    Description: Port of the Aurora PostgreSQL cluster
+    Value: !GetAtt AuroraCluster.Endpoint.Port
+    Export:
+      Name: !Sub "${ProjectName}-DatabasePort"
+
+  DatabaseName:
+    Description: Name of the database
+    Value: !Sub "${ProjectName}db"
+    Export:
+      Name: !Sub "${ProjectName}-DatabaseName"
+
+  DatabaseSecretArn:
+    Description: ARN of the secret containing database credentials
+    Value: !Ref DatabaseSecret
+    Export:
+      Name: !Sub "${ProjectName}-DatabaseSecretArn"
