@@ -33,13 +33,13 @@ Resources:
   BackendTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      Cpu: 256
       RequiresCompatibilities:
           - FARGATE
       NetworkMode: awsvpc
       ContainerDefinitions:
         - Name: AppName
           Image: !GetAtt BackendRepository.RepositoryUri
-          Cpu: 256
           PortMappings:
             - ContainerPort: 8080
               HostPort: 8080
