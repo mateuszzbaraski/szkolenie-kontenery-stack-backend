@@ -51,6 +51,7 @@ Resources:
 
   BackendECSService:
     Type: AWS::ECS::Service
+    DependsOn: LoadBalancerListener
     Properties:
       LoadBalancers:
           - ContainerName: ApkaMatiego
