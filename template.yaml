@@ -34,6 +34,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Cpu: 256
+      Memory: 512
       RequiresCompatibilities:
           - FARGATE
       NetworkMode: awsvpc
@@ -44,7 +45,6 @@ Resources:
             - ContainerPort: 8080
               HostPort: 8080
               Protocol: tcp
-          Memory: 512
           Essential: true
   
 
